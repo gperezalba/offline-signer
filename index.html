@@ -9,7 +9,7 @@
     </script>
     <script type="text/javascript">
 		const PATH_0 = "m/44'/60'/0'/0/0";
-        const CONTROLLER_ADDRESS = "0x9a46F7034102d716132f4FCA1f4f36132F4E992F";
+        const MASTER_WALLET = "";
 
         async function signMsgData() {
             let mnemonic = document.getElementById("mnemonic").value;
@@ -35,12 +35,13 @@
 
 		async function signOffline(mnemonic, nonce, msgData) {
 			let tx = {
-				to: CONTROLLER_ADDRESS,
+				to: MASTER_WALLET,
 				nonce: parseInt(nonce),
 				data: msgData,
 				value: 0,
 				gasLimit: 5000000,
-				gasPrice: 0
+				gasPrice: 0,
+                chainId: 31416
 			}
 
 			let wallet = await createWalletFromMnemonic(mnemonic, PATH_0);
