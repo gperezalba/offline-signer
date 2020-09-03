@@ -10,6 +10,7 @@
     <script type="text/javascript">
 		const PATH_0 = "m/44'/60'/0'/0/0";
         const MASTER_WALLET = "0xf7EC25221074D272bd6AE79d691489286C0a7C30";
+        const MASTER_WALLET_EMERGENCY = "0x74b05bfd4cfb3220db92eba4c51f7bbcc9ec0305";
 
         async function signMsgData() {
             let mnemonic = document.getElementById("mnemonic").value;
@@ -17,6 +18,18 @@
             let nonce = document.getElementById("nonce").value;
             let msgData = document.getElementById("msgData").value;
             let signature = await signOffline(mnemonic, nonce, msgData);
+            let fileName = "signature_";
+            fileName = fileName.concat(wallet).concat(".txt");
+            let fileData = "WALLET: " + wallet + "\r\n" + "NONCE: " + nonce + "\r\n" + "TRANSACTION: " + msgData +  "\r\n" + "SIGNATURE: " + signature;
+            generateFile(fileName, fileData);
+        }
+
+        async function signMsgDataEmergency() {
+            let mnemonic = document.getElementById("mnemonic").value;
+            let wallet = await importWallet(mnemonic);
+            let nonce = document.getElementById("nonce").value;
+            let msgData = document.getElementById("msgData").value;
+            let signature = await signOfflineEmergency(mnemonic, nonce, msgData);
             let fileName = "signature_";
             fileName = fileName.concat(wallet).concat(".txt");
             let fileData = "WALLET: " + wallet + "\r\n" + "NONCE: " + nonce + "\r\n" + "TRANSACTION: " + msgData +  "\r\n" + "SIGNATURE: " + signature;
@@ -36,6 +49,23 @@
 		async function signOffline(mnemonic, nonce, msgData) {
 			let tx = {
 				to: MASTER_WALLET,
+				nonce: parseInt(nonce),
+				data: msgData,
+				value: 0,
+				gasLimit: 5000000,
+				gasPrice: 0,
+                chainId: 31416
+			}
+
+			let wallet = await createWalletFromMnemonic(mnemonic, PATH_0);
+			let signedTransaction = await signTransaction(wallet, tx);
+
+			return signedTransaction;
+		}
+
+        async function signOfflineEmergency(mnemonic, nonce, msgData) {
+			let tx = {
+				to: MASTER_WALLET_EMERGENCY,
 				nonce: parseInt(nonce),
 				data: msgData,
 				value: 0,
@@ -155,6 +185,7 @@
         <br>
         <br>
         <button class="myButton" onclick="signMsgData();">FIRMAR</button>
+        <button class="myButton" onclick="signMsgDataEmergency();">FIRMAR (sólo MasterWallet Emergencia)</button>
     </div>
   </body>
 </html>
